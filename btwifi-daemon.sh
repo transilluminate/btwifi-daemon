@@ -1,6 +1,7 @@
 #!/bin/bash
-# Copyright 2023 Adrian Robinson <adrian.j.robinson at gmail dot com>
-# https://github.com/transilluminate/btwifi-daemon
+# Copyright 2023 Adrian Robinson
+# email: $ echo YWRyaWFuIGRvdCBqIGRvdCByb2JpbnNvbiBhdCBnbWFpbCBkb3QgY29tCg== | base64 --decode
+# github: https://github.com/transilluminate/btwifi-daemon
 #
 # add this to the bottom of /etc/rc.local:
 # /path/to/btwifi-daemon.sh &
