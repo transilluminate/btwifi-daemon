@@ -8,3 +8,18 @@
 # login details for BTWiFi
 USERNAME="person"
 PASSWORD="password"
+
+# set to true for chatty output :)
+DEBUG=false
+
+# find out with iwconfig
+INTERFACE=wlan0
+
+# delays
+DELAY_INTERFACE=2       # number of seconds to see if the interface is up / connected to the access point (default 2)
+DELAY_LOGIN_ATTEMPTS=5  # additional delay between login attempts (default 5)
+DELAY_SUCCESS=60        # when things are going well, slow down (default 60)
+WGET_TIMEOUT=5          # number of seconds to wait for server response (default 5)
+
+# fairly static variable, don't touch
+SERVER="https://www.btwifi.com:8443"

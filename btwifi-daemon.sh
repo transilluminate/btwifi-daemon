@@ -9,21 +9,8 @@
 # location of the config file (include absolute path)
 CONFIG_FILE="btwifi-daemon.config"
 
-# load external config file for login details
-if [ -e $CONFIG_FILE ]; then
-	source $CONFIG_FILE
-else
-	echo "Config file does not exist!"
-	echo "Please see ${CONFIG_FILE}.example for hints"
-	exit 1
-fi
-
-DEBUG=false
-INTERFACE=wlan0
-SERVER="https://www.btwifi.com:8443"
-DELAY_INTERFACE=2       # number of seconds to see if the interface is up / connected to the access point
-DELAY_LOGIN_ATTEMPTS=5  # additional delay between login attempts
-DELAY_SUCCESS=60        # when things are going well, slow down
+# static options
+WGET="wget -qO - --no-check-certificate --no-cache"
 
 # Check if terminal allows output, if yes, define colors for output
 if [[ -t 1 ]]; then			# check we're on a console
@@ -37,10 +24,29 @@ if [[ -t 1 ]]; then			# check we're on a console
 	fi
 fi
 
+# load external config file for login details
+if [ -e $CONFIG_FILE ]; then
+	source $CONFIG_FILE
+else
+	echo "${red}Error, config file '${CONFIG_FILE}' could not be found!${nc}"
+	exit 1
+fi
+
+check_tool() {
+	local command=$1
+	if ! command -v "$command" >/dev/null; then
+		echo -e "${red}Error, command '$command' could not be found!${nc}"
+		exit 1
+	fi
+}
+check_tool iwgetid
+check_tool wget
+check_tool logger
+
 while true; do
 	if [[ $(iwgetid $INTERFACE) && $(iwgetid -r $INTERFACE) == "BTWi-fi" ]]; then
 		if [[ "$DEBUG" = true ]]; then echo "${green}Info: You're connected to 'BTWi-fi' access point${nc}"; fi
-		serverResponse=$(wget -qO - --no-check-certificate --no-cache --timeout 5 "$SERVER/home")
+		serverResponse=$($WGET --timeout $WGET_TIMEOUT "$SERVER/home")
 		isLoggedIn=$(echo $serverResponse | grep -c "now logged on to BT Wi-Fi")
 		if [[ $isLoggedIn > 0 ]]; then
 			if [[ "$DEBUG" = true ]]; then echo "${green}Info: You're logged in to BTWi-fi!${nc}"; fi
@@ -49,7 +55,7 @@ while true; do
 		else
 			if [[ "$DEBUG" = true ]]; then echo "${red}Info: You're not logged in to BTWi-fi${nc}"; fi
 		 	if [[ "$DEBUG" = true ]]; then echo "Info: Attempting login"; fi
-			serverResponse=$(wget -qO - --no-check-certificate --no-cache --post-data "username=$USERNAME&password=$PASSWORD" "$SERVER/tbbLogon")
+			serverResponse=$($WGET --timeout $WGET_TIMEOUT --post-data "username=$USERNAME&password=$PASSWORD" "$SERVER/tbbLogon")
 			isAuthenticated=$(echo $serverResponse | grep -c "now logged on")
 			if [[ $isAuthenticated > 0 ]]; then
 				if [[ "$DEBUG" = true ]]; then echo "${green}Success: Authenticating to BTWi-fi was successful!${nc}"; fi
