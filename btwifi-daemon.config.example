@@ -1,7 +1,7 @@
 #
 # btwifi-daemon.config.example
 #
-# Edit this file then save as download-station.config
+# Edit this file then save as btwifi-daemon.config
 # If using Git add this to your .gitignore file:
 # 	'$ echo btwifi-daemon.config >> .gitignore'
 
